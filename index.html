@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>도치의 아카이브</title>
+<meta name="description" content="도치쌤이 만든 앱·자료·연수·저서를 한자리에 모아 둔 아카이브입니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦔</text></svg>">
+<style>
+:root{
+  --night:#241a18; --bark:#4d3633; --lamp:#f2b45c; --cream:#fbf6ee;
+  --berry:#c04b45; --moss:#6e7f5a;
+  --paper:#fff; --line:#e7ded0; --ink:#2f2320; --mute:#8a7a70;
+  --shadow:0 1px 2px rgba(36,26,24,.06),0 8px 24px rgba(36,26,24,.06);
+  --r:14px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:Pretendard,-apple-system,"Segoe UI","Malgun Gothic","Noto Sans KR",sans-serif;
+  line-height:1.55;font-size:15px;
+}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+
+/* ── 헤더 ─────────────────────────────── */
+.da-top{background:var(--night);color:var(--cream);padding:22px 18px 18px}
+.da-top-in{max-width:1080px;margin:0 auto}
+.da-top h1{margin:0;font-size:20px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.da-top p{margin:5px 0 0;font-size:13px;color:#c9b8ac}
+.da-link{color:var(--lamp);text-decoration:none;font-weight:600;white-space:nowrap;margin-left:4px}
+.da-link:hover{text-decoration:underline}
+.da-count{margin-left:auto;font-size:12px;color:#c9b8ac;font-weight:400}
+
+/* ── 컨트롤 바 ─────────────────────────── */
+.da-bar{position:sticky;top:0;z-index:20;background:rgba(251,246,238,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:10px 18px}
+.da-bar-in{max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.da-tabs{display:flex;gap:4px;background:#efe6d8;padding:3px;border-radius:11px}
+.da-tabs button{border:0;background:transparent;padding:7px 13px;border-radius:9px;
+  font-size:13.5px;font-weight:600;color:var(--bark);transition:.15s}
+.da-tabs button[aria-pressed=true]{background:var(--paper);box-shadow:var(--shadow);color:var(--night)}
+.da-search{flex:1;min-width:150px;position:relative}
+.da-search input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--line);
+  border-radius:10px;background:var(--paper);font-size:14px;outline:none}
+.da-search input:focus{border-color:var(--lamp);box-shadow:0 0 0 3px rgba(242,180,92,.2)}
+.da-search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  width:15px;height:15px;color:var(--mute)}
+.da-toggle{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--bark);
+  background:var(--paper);border:1px solid var(--line);padding:7px 11px;border-radius:10px}
+.da-toggle input{accent-color:var(--berry);margin:0}
+.da-sort{background:var(--paper);border:1px solid var(--line);border-radius:10px;
+  padding:8px 10px;font-size:13px}
+
+/* ── 레이아웃 ─────────────────────────── */
+main{max-width:1080px;margin:0 auto;padding:18px 18px 70px}
+.da-empty{text-align:center;color:var(--mute);padding:60px 20px;font-size:14px}
+
+/* ── 항목 카드 ────────────────────────── */
+.da-card{display:block;background:var(--paper);border:1px solid var(--line);
+  border-radius:var(--r);padding:13px 15px;text-decoration:none;position:relative;
+  transition:.15s;box-shadow:var(--shadow)}
+a.da-card:hover{border-color:var(--lamp);transform:translateY(-1px)}
+.da-card-head{display:flex;align-items:flex-start;gap:8px}
+.da-emoji{font-size:15px;line-height:1.4;flex:none}
+.da-name{font-weight:700;font-size:14.5px;letter-spacing:-.01em;flex:1;color:var(--night)}
+.da-desc{margin:5px 0 0;font-size:12.8px;color:var(--bark);opacity:.9}
+.da-meta{margin-top:9px;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.da-badge{font-size:10.5px;font-weight:700;padding:2.5px 7px;border-radius:999px;letter-spacing:.01em}
+.b-public{background:#e8efe1;color:#46583a}
+.b-dorms{background:#fdf0d8;color:#8a5d16}
+.b-private{background:#eee9e3;color:#7a6c63}
+.da-tag{font-size:10.5px;color:var(--mute);background:#f6f1e8;padding:2.5px 7px;border-radius:999px}
+.da-date{font-size:10.5px;color:var(--mute);margin-left:auto;flex:none}
+.da-alt{display:inline-block;margin-top:8px;font-size:11.5px;color:var(--bark);
+  border:1px solid var(--line);border-radius:8px;padding:3px 8px;text-decoration:none;background:#faf7f1}
+.da-alt:hover{border-color:var(--lamp)}
+.da-nolink{opacity:.72}
+
+.da-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(285px,1fr))}
+
+/* ── 섹션 ─────────────────────────────── */
+.da-sec{margin-bottom:26px}
+.da-sec-h{display:flex;align-items:baseline;gap:8px;margin:0 0 10px;padding-bottom:7px;
+  border-bottom:2px solid var(--line)}
+.da-sec-h b{font-size:15px;color:var(--night)}
+.da-sec-h span{font-size:12px;color:var(--mute)}
+
+/* ── 캘린더 뷰 ────────────────────────── */
+.da-years{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.da-years button{border:1px solid var(--line);background:var(--paper);padding:6px 13px;
+  border-radius:999px;font-size:13px;font-weight:600;color:var(--bark)}
+.da-years button[aria-pressed=true]{background:var(--night);border-color:var(--night);color:var(--cream)}
+.da-months{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.da-month{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);
+  padding:11px 12px;min-height:78px}
+.da-month.is-empty{background:transparent;border-style:dashed;opacity:.5}
+.da-month-h{font-size:12px;font-weight:800;color:var(--bark);letter-spacing:.02em;
+  display:flex;justify-content:space-between;margin-bottom:7px}
+.da-month-h em{font-style:normal;color:var(--lamp);font-weight:800}
+.da-mini{display:block;text-decoration:none;padding:6px 0;border-top:1px dotted var(--line)}
+.da-mini:first-of-type{border-top:0}
+.da-mini b{display:block;font-size:12.8px;font-weight:600;color:var(--night)}
+.da-mini span{font-size:10.5px;color:var(--mute)}
+a.da-mini:hover b{color:var(--berry);text-decoration:underline}
+.da-undated{margin-top:24px;background:#f6f1e8;border:1px dashed var(--line);
+  border-radius:var(--r);padding:14px 16px}
+.da-undated summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--bark)}
+.da-undated p{font-size:12px;color:var(--mute);margin:8px 0 12px}
+
+/* ── 태그 뷰 ──────────────────────────── */
+.da-cloud{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.da-cloud button{border:1px solid var(--line);background:var(--paper);border-radius:999px;
+  padding:6px 12px;font-size:12.5px;color:var(--bark)}
+.da-cloud button[aria-pressed=true]{background:var(--berry);border-color:var(--berry);color:#fff;font-weight:600}
+.da-cloud button i{font-style:normal;opacity:.55;margin-left:4px;font-size:11px}
+.da-cloud button:disabled{opacity:.32;cursor:default}
+.da-clear{background:none;border:0;color:var(--berry);font-size:12.5px;
+  text-decoration:underline;padding:4px 0;margin-bottom:12px}
+
+footer{max-width:1080px;margin:0 auto;padding:0 18px 40px;font-size:11.5px;color:var(--mute)}
+
+@media(max-width:640px){
+  .da-bar-in{gap:6px}
+  .da-tabs{width:100%}
+  .da-tabs button{flex:1;padding:8px 4px;font-size:13px}
+  .da-search{order:3;width:100%;flex-basis:100%}
+  .da-grid,.da-months{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="da-top">
+  <div class="da-top-in">
+    <h1>🦔 도치의 아카이브 <span class="da-count" id="count"></span></h1>
+    <p>만든 앱·자료·연수·저서를 한자리에. 날짜순으로 보거나, 유형·태그로 골라 보세요.
+       <a class="da-link" href="https://thecozyforest.github.io/dochis-warehouse/for-teachers/"
+          target="_blank" rel="noopener">공개 자료실 →</a></p>
+  </div>
+</header>
+
+<div class="da-bar">
+  <div class="da-bar-in">
+    <div class="da-tabs" role="group" aria-label="보기 방식">
+      <button data-view="calendar" aria-pressed="true">📅 캘린더</button>
+      <button data-view="type" aria-pressed="false">🗂 유형별</button>
+      <button data-view="tag" aria-pressed="false">🏷 태그별</button>
+    </div>
+    <label class="da-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/>
+      </svg>
+      <input id="q" type="search" placeholder="이름·설명·태그 검색" aria-label="검색">
+    </label>
+    <select class="da-sort" id="sort" aria-label="정렬">
+      <option value="date">최신순</option>
+      <option value="name">이름순</option>
+    </select>
+    <label class="da-toggle"><input type="checkbox" id="showPrivate"> 비공개 포함</label>
+  </div>
+</div>
+
+<main id="app"><div class="da-empty">불러오는 중…</div></main>
+<footer id="foot"></footer>
+
+<script>
+const EMOJI={app:"🧰",doc:"📄",form:"📝",lecture:"🎤",book:"📚"};
+const MONTHS=["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+const S={view:"calendar",q:"",sort:"date",showPrivate:false,year:null,tags:new Set()};
+let DATA=null;
+
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* 검색·공개등급 필터. 태그 필터는 태그 뷰에서만 적용한다. */
+function visible(useTags){
+  const q=S.q.trim().toLowerCase();
+  return DATA.items.filter(it=>{
+    if(it.channel==="private" && !S.showPrivate) return false;
+    if(q){
+      const hay=(it.name+" "+it.desc+" "+it.tags.join(" ")).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    if(useTags && S.tags.size){
+      for(const t of S.tags) if(!it.tags.includes(t)) return false;
+    }
+    return true;
+  });
+}
+function sorted(list){
+  const a=[...list];
+  if(S.sort==="name") a.sort((x,y)=>x.name.localeCompare(y.name,"ko"));
+  else a.sort((x,y)=>(y.date||"0").localeCompare(x.date||"0")||x.name.localeCompare(y.name,"ko"));
+  return a;
+}
+
+function card(it){
+  const tag=S.view==="tag"?"":it.tags.slice(0,3).map(t=>`<span class="da-tag">${esc(t)}</span>`).join("");
+  const date=it.date?`<span class="da-date" title="${esc(it.dateNote||"")}">${it.date.replace(/-/g,".")}</span>`:"";
+  const alt=it.altHref?`<a class="da-alt" href="${esc(it.altHref)}" target="_blank" rel="noopener"
+    onclick="event.stopPropagation()">${esc(it.altLabel||"다른 배포판")} ↗</a>`:"";
+  const body=`
+    <div class="da-card-head">
+      <span class="da-emoji" aria-hidden="true">${EMOJI[it.type]||"•"}</span>
+      <span class="da-name">${esc(it.name)}</span>
+      ${date}
+    </div>
+    <p class="da-desc">${esc(it.desc)}</p>
+    <div class="da-meta">
+      <span class="da-badge b-${it.channel}">${esc(DATA.channels[it.channel])}</span>
+      ${tag}
+    </div>${alt}`;
+  return it.href
+    ? `<a class="da-card" href="${esc(it.href)}" target="_blank" rel="noopener">${body}</a>`
+    : `<div class="da-card da-nolink">${body}</div>`;
+}
+
+/* ── 캘린더 뷰 ─────────────────────────── */
+function viewCalendar(list){
+  const dated=list.filter(i=>i.date), undated=list.filter(i=>!i.date);
+  const years=[...new Set(dated.map(i=>i.date.slice(0,4)))].sort((a,b)=>b.localeCompare(a));
+  if(S.year===null||!years.includes(S.year)) S.year=years[0]||null;
+
+  let html="";
+  if(years.length){
+    html+=`<div class="da-years" role="group" aria-label="연도 선택">`+
+      years.map(y=>`<button data-year="${y}" aria-pressed="${y===S.year}">${y}년 <i style="opacity:.55;font-style:normal">${
+        dated.filter(i=>i.date.startsWith(y)).length}</i></button>`).join("")+`</div>`;
+
+    const inYear=dated.filter(i=>i.date.startsWith(S.year));
+    html+=`<div class="da-months">`+MONTHS.map((mn,mi)=>{
+      const mm=String(mi+1).padStart(2,"0");
+      const items=inYear.filter(i=>i.date.slice(5,7)===mm)
+        .sort((a,b)=>a.date.localeCompare(b.date));
+      if(!items.length) return `<div class="da-month is-empty"><div class="da-month-h"><span>${mn}</span></div></div>`;
+      return `<div class="da-month">
+        <div class="da-month-h"><span>${mn}</span><em>${items.length}</em></div>
+        ${items.map(it=>{
+          const day=Number(it.date.slice(8,10));
+          const line=`<b>${esc(it.name)}</b><span>${day}일 · ${esc(DATA.types[it.type])}${
+            it.dateNote?" · "+esc(it.dateNote):""}</span>`;
+          return it.href
+            ? `<a class="da-mini" href="${esc(it.href)}" target="_blank" rel="noopener">${line}</a>`
+            : `<div class="da-mini">${line}</div>`;
+        }).join("")}
+      </div>`;
+    }).join("")+`</div>`;
+  }else{
+    html+=`<div class="da-empty">날짜가 있는 항목이 없습니다.</div>`;
+  }
+
+  if(undated.length){
+    html+=`<details class="da-undated"${years.length?"":" open"}>
+      <summary>📌 날짜를 아직 안 적은 항목 ${undated.length}개</summary>
+      <p>여기 있는 항목에 <code>date</code>를 채우면 자동으로 위 캘린더에 올라갑니다.</p>
+      <div class="da-grid">${sorted(undated).map(card).join("")}</div>
+    </details>`;
+  }
+  return html;
+}
+
+/* ── 유형별 뷰 ─────────────────────────── */
+function viewType(list){
+  const order=["app","doc","form","lecture","book"];
+  const secs=order.map(t=>{
+    const items=sorted(list.filter(i=>i.type===t));
+    if(!items.length) return "";
+    return `<section class="da-sec">
+      <h2 class="da-sec-h"><b>${EMOJI[t]} ${esc(DATA.types[t])}</b><span>${items.length}개</span></h2>
+      <div class="da-grid">${items.map(card).join("")}</div>
+    </section>`;
+  }).join("");
+  return secs||`<div class="da-empty">조건에 맞는 항목이 없습니다.</div>`;
+}
+
+/* ── 태그별 뷰 ─────────────────────────── */
+function viewTag(list){
+  // 클라우드는 '검색 + 공개등급'까지만 반영한 모집단에서 뽑아야 선택 후에도 남은 태그가 보인다
+  const pool=visible(false);
+  const all={};
+  pool.forEach(i=>i.tags.forEach(t=>all[t]=(all[t]||0)+1));
+
+  // 개수는 '이 태그를 더 눌렀을 때 남는 항목 수'. 0이면 눌러도 빈 결과이므로 비활성.
+  const sel=[...S.tags];
+  const counts={};
+  Object.keys(all).forEach(t=>{
+    counts[t]=sel.length
+      ? pool.filter(i=>sel.every(s=>i.tags.includes(s))&&i.tags.includes(t)).length
+      : all[t];
+  });
+  const tags=Object.keys(all).sort((a,b)=>counts[b]-counts[a]||all[b]-all[a]||a.localeCompare(b,"ko"));
+
+  let html=`<div class="da-cloud" role="group" aria-label="태그 선택">`+
+    tags.map(t=>{
+      const off=counts[t]===0&&!S.tags.has(t);
+      return `<button data-tag="${esc(t)}" aria-pressed="${S.tags.has(t)}"${off?" disabled":""}>${
+        esc(t)}<i>${counts[t]}</i></button>`;
+    }).join("")+`</div>`;
+  if(S.tags.size) html+=`<button class="da-clear" id="clearTags">선택한 태그 ${S.tags.size}개 해제</button>`;
+
+  const items=sorted(list);
+  html+=items.length
+    ? `<section class="da-sec"><h2 class="da-sec-h"><b>${
+        S.tags.size?[...S.tags].join(" + ")+" 항목":"전체"}</b><span>${items.length}개</span></h2>
+       <div class="da-grid">${items.map(card).join("")}</div></section>`
+    : `<div class="da-empty">두 태그를 모두 가진 항목이 없습니다. 태그를 하나 빼 보세요.</div>`;
+  return html;
+}
+
+function render(){
+  const list=visible(S.view==="tag");
+  const app=document.getElementById("app");
+  app.innerHTML = S.view==="calendar" ? viewCalendar(list)
+                : S.view==="type"     ? viewType(list)
+                :                       viewTag(list);
+
+  const total=DATA.items.length, shown=list.length;
+  document.getElementById("count").textContent =
+    shown===total ? `전체 ${total}개` : `${shown} / ${total}개`;
+
+  app.querySelectorAll("[data-year]").forEach(b=>b.onclick=()=>{S.year=b.dataset.year;render();});
+  app.querySelectorAll("[data-tag]").forEach(b=>b.onclick=()=>{
+    const t=b.dataset.tag; S.tags.has(t)?S.tags.delete(t):S.tags.add(t); render();
+  });
+  const ct=document.getElementById("clearTags");
+  if(ct) ct.onclick=()=>{S.tags.clear();render();};
+}
+
+document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{
+  S.view=b.dataset.view;
+  document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  render();
+});
+let t; document.getElementById("q").oninput=e=>{
+  clearTimeout(t); t=setTimeout(()=>{S.q=e.target.value;render();},140);
+};
+document.getElementById("sort").onchange=e=>{S.sort=e.target.value;render();};
+document.getElementById("showPrivate").onchange=e=>{S.showPrivate=e.target.checked;render();};
+
+fetch("./data/items.json",{cache:"no-store"})
+  .then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
+  .then(d=>{
+    DATA=d;
+    document.getElementById("foot").textContent=
+      `마지막 갱신 ${d.updated} · 만든 사람 기경민(도치쌤)`;
+    render();
+  })
+  .catch(e=>{
+    document.getElementById("app").innerHTML=
+      `<div class="da-empty">자료를 불러오지 못했습니다. (${esc(e.message)})<br>
+       파일을 더블클릭해서 여는 대신 로컬 서버로 열어야 합니다.</div>`;
+  });
+</script>
+</body>
+</html>
