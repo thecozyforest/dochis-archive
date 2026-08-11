@@ -134,11 +134,10 @@
       ],
       "date": "2026-06-03",
       "dateNote": "리포 등록일",
-      "channel": "public",
-      "href": "https://thecozyforest.github.io/dochis-warehouse/Soongsil_University_Admission_Reader/",
-      "altHref": "https://dorms.school/apps/44cae67a-13a1-4566-94e8-d8eb6d0f2edd",
-      "altLabel": "DoRms 배포판",
-      "pack": true
+      "channel": "dorms",
+      "href": "https://dorms.school/apps/44cae67a-13a1-4566-94e8-d8eb6d0f2edd",
+      "pack": true,
+      "note": "창고 공개판은 내려갔습니다(폴더가 _hide 로 바뀜). DoRms 배포판만 남았습니다."
     },
     {
       "id": "soongsil-reader-shield",
