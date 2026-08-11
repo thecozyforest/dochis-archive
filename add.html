@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>자료 등록 도우미 — 도치의 아카이브</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦔</text></svg>">
+<style>
+:root{
+  --night:#241a18; --bark:#4d3633; --lamp:#f2b45c; --cream:#fbf6ee;
+  --berry:#c04b45; --moss:#6e7f5a;
+  --paper:#fff; --line:#e7ded0; --ink:#2f2320; --mute:#8a7a70;
+  --shadow:0 1px 2px rgba(36,26,24,.06),0 8px 22px rgba(36,26,24,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);line-height:1.6;font-size:15px;
+  font-family:Pretendard,-apple-system,"Segoe UI","Malgun Gothic","Noto Sans KR",sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+
+.hd{background:var(--night);color:var(--cream);padding:26px 20px}
+.in{max-width:760px;margin:0 auto}
+.hd h1{margin:0;font-size:20px}
+.hd p{margin:7px 0 0;font-size:13.5px;color:#c9b8ac}
+
+main{max-width:760px;margin:0 auto;padding:22px 20px 60px}
+
+.step{background:var(--paper);border:1px solid var(--line);border-radius:15px;
+  padding:18px 20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.step h2{margin:0 0 4px;font-size:15.5px;color:var(--night);display:flex;align-items:center;gap:8px}
+.step h2 i{font-style:normal;background:var(--lamp);color:var(--night);width:22px;height:22px;
+  border-radius:50%;display:grid;place-items:center;font-size:12.5px;font-weight:800;flex:none}
+.step>p{margin:0 0 14px;font-size:13px;color:var(--mute);padding-left:30px}
+
+label{display:block;margin-bottom:12px}
+label span{display:block;font-size:12.5px;font-weight:700;color:var(--bark);margin-bottom:4px}
+label small{font-weight:400;color:var(--mute)}
+input[type=text],textarea,select{width:100%;padding:9px 12px;border:1px solid var(--line);
+  border-radius:10px;background:#fdfbf7;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--lamp);box-shadow:0 0 0 3px rgba(242,180,92,.2)}
+textarea{resize:vertical;min-height:56px}
+.row{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.check{display:flex;align-items:flex-start;gap:9px;background:#f6f1e8;border-radius:10px;
+  padding:11px 13px;margin-bottom:12px}
+.check input{margin:3px 0 0;accent-color:var(--berry);flex:none}
+.check span{font-size:13px;font-weight:600;color:var(--bark);display:block;margin:0}
+.check small{display:block;font-weight:400;color:var(--mute);font-size:12px;margin-top:2px}
+
+.out{background:var(--night);color:#e9dfd4;border-radius:12px;padding:15px 16px;
+  font-family:ui-monospace,Consolas,monospace;font-size:12.5px;white-space:pre;
+  overflow-x:auto;margin:0}
+.warn{background:#fdf0d8;border:1px solid #f0d9a8;color:#8a5d16;border-radius:10px;
+  padding:11px 13px;font-size:12.5px;margin-bottom:12px}
+.btn{background:var(--night);color:var(--cream);border:0;border-radius:11px;
+  padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;margin-top:12px}
+.btn:hover{background:var(--bark)}
+.btn.ghost{background:var(--paper);color:var(--night);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--lamp);background:var(--paper)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+a.link{color:var(--berry);font-weight:600}
+ol{margin:0;padding-left:20px;font-size:13.5px;color:var(--bark)}
+ol li{margin-bottom:7px}
+code{background:#f6f1e8;padding:1px 5px;border-radius:5px;font-size:12.5px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="in">
+    <h1>🦔 자료 등록 도우미</h1>
+    <p>빈칸을 채우면 아래에 붙여넣을 내용이 만들어집니다. JSON을 직접 쓸 필요가 없습니다.</p>
+  </div>
+</header>
+
+<main>
+
+<section class="step">
+  <h2><i>1</i> 자료 정보</h2>
+  <p>사람들에게 보일 내용입니다.</p>
+
+  <label><span>이름</span>
+    <input type="text" id="f-name" placeholder="2027 수능최저 조회기"></label>
+
+  <label><span>한 줄 설명</span>
+    <textarea id="f-desc" placeholder="성적표를 넣으면 수능최저 충족 여부를 자동 계산합니다."></textarea></label>
+
+  <div class="row">
+    <label><span>종류</span>
+      <select id="f-type">
+        <option value="app">앱·도구</option>
+        <option value="doc">문서·자료</option>
+        <option value="form">폼·템플릿</option>
+        <option value="lecture">연수·강의</option>
+        <option value="book">저서·집필</option>
+      </select></label>
+    <label><span>만든 날 <small>모르면 비워 두세요</small></span>
+      <input type="date" id="f-date"></label>
+  </div>
+
+  <label><span>태그 <small>쉼표로 구분</small></span>
+    <input type="text" id="f-tags" placeholder="진학, 수능최저, 상담"></label>
+</section>
+
+<section class="step">
+  <h2><i>2</i> 누가 볼 수 있나요</h2>
+  <p>공개 범위에 따라 자료실에 나가는 방식이 달라집니다.</p>
+
+  <label><span>공개 범위</span>
+    <select id="f-channel">
+      <option value="public">공개 — 누구나 열람</option>
+      <option value="dorms">DoRms 한정 — 교사 인증 필요</option>
+      <option value="private">비공개 — 링크를 넣지 않음</option>
+    </select></label>
+
+  <div class="check">
+    <input type="checkbox" id="f-pack">
+    <label for="f-pack" style="margin:0">
+      <span>진학 자료실에 싣기</span>
+      <small>진학·생기부 자료만 체크하세요. 학급운영·수업 자료는 체크하지 마세요 — 도치의 창고가 담당합니다.</small>
+    </label>
+  </div>
+
+  <label id="wrap-href"><span>링크 주소</span>
+    <input type="text" id="f-href" placeholder="https://thecozyforest.github.io/dochis-warehouse/폴더이름/"></label>
+
+  <div class="warn" id="warn-private" hidden>
+    비공개 자료에는 링크를 넣지 않습니다. 이름과 설명만 아카이브에 남습니다.
+  </div>
+</section>
+
+<section class="step">
+  <h2><i>3</i> 이걸 복사하세요</h2>
+  <p>아래 내용을 통째로 복사한 뒤, GitHub의 items.json 에서 <code>"items": [</code> 바로 다음 줄에 붙여넣으세요.</p>
+
+  <pre class="out" id="out">이름을 입력하면 여기에 나타납니다.</pre>
+
+  <div class="btns">
+    <button class="btn" id="copy">📋 복사하기</button>
+    <a class="btn ghost" id="go"
+       href="https://github.com/thecozyforest/dochis-archive/edit/main/data/items.json"
+       target="_blank" rel="noopener">GitHub에서 items.json 열기 →</a>
+  </div>
+</section>
+
+<section class="step">
+  <h2><i>4</i> GitHub에서 할 일</h2>
+  <ol>
+    <li>위 <b>GitHub에서 items.json 열기</b>를 누릅니다.</li>
+    <li><code>"items": [</code> 를 찾습니다. 파일 위쪽에 있습니다.</li>
+    <li>그 <b>바로 다음 줄</b>에 복사한 내용을 붙여넣습니다.</li>
+    <li>오른쪽 위 <b>Commit changes</b> → <b>Commit changes</b>.</li>
+    <li>1~2분 뒤 <a class="link" href="https://thecozyforest.github.io/dochis-archive/" target="_blank" rel="noopener">아카이브</a>와
+        <a class="link" href="https://thecozyforest.github.io/dochis-warehouse/for-teachers/" target="_blank" rel="noopener">진학 자료실</a>에 함께 반영됩니다.</li>
+  </ol>
+</section>
+
+<section class="step">
+  <h2><i>+</i> HTML 파일을 공개 링크로 만들려면</h2>
+  <ol>
+    <li><a class="link" href="https://github.com/thecozyforest/dochis-warehouse/upload/main" target="_blank" rel="noopener">창고 업로드 화면</a>을 엽니다.</li>
+    <li>위쪽 칸(파일 이름 입력란)에 <code>폴더이름/index.html</code> 처럼 <b>영문 폴더 이름을 먼저 치고 <code>/</code></b> 를 누르면 폴더가 만들어집니다.</li>
+    <li>HTML 파일을 끌어다 놓고 <b>Commit changes</b>.</li>
+    <li>주소는 <code>https://thecozyforest.github.io/dochis-warehouse/폴더이름/</code> 가 됩니다. 이걸 위 <b>링크 주소</b> 칸에 넣으세요.</li>
+  </ol>
+  <div class="warn" style="margin:14px 0 0">
+    이미 있는 폴더 이름은 쓰지 마세요. 기존 자료가 덮어써지고 링크트리에 걸린 주소가 깨집니다.
+  </div>
+</section>
+
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const F=["f-name","f-desc","f-type","f-date","f-tags","f-channel","f-pack","f-href"];
+
+function slug(s){
+  const m=(s||"").match(/[A-Za-z0-9]+/g);
+  return m?m.join("-").toLowerCase():"";
+}
+
+function build(){
+  const name=$("f-name").value.trim();
+  const channel=$("f-channel").value;
+  const priv=channel==="private";
+
+  $("warn-private").hidden=!priv;
+  $("wrap-href").hidden=priv;
+
+  if(!name){
+    $("out").textContent="이름을 입력하면 여기에 나타납니다.";
+    return;
+  }
+
+  // id 는 링크 주소의 폴더 이름을 우선 쓴다. 폴더 이름은 창고 안에서 이미 유일하기 때문.
+  // 링크가 없으면 한글 이름에서 만드는데, 그러면 너무 짧아져 충돌하기 쉬우므로 날짜를 붙인다.
+  const href=priv?"":$("f-href").value.trim();
+  const fromHref=slug(href.replace(/\/+$/,"").split("/").pop());
+  const stamp=new Date().toISOString().slice(2,10).replace(/-/g,"");
+  const id=fromHref || ((slug(name)||"item")+"-"+stamp);
+
+  const tags=$("f-tags").value.split(",").map(t=>t.trim()).filter(Boolean);
+  const date=$("f-date").value||null;
+
+  const o={
+    id, name,
+    desc:$("f-desc").value.trim(),
+    type:$("f-type").value,
+    tags,
+    date,
+    dateNote:date?"등록일":null,
+    channel,
+    pack:$("f-pack").checked&&!priv,
+  };
+  if(href) o.href=href;
+
+  // items 배열 안에 그대로 넣을 수 있게 들여쓰기와 뒤쪽 쉼표까지 붙인다
+  const body=JSON.stringify(o,null,2).split("\n").map(l=>"    "+l).join("\n");
+  $("out").textContent=body+",";
+}
+
+F.forEach(id=>{
+  const el=$(id);
+  el.addEventListener("input",build);
+  el.addEventListener("change",build);
+});
+
+$("copy").onclick=async()=>{
+  const t=$("out").textContent;
+  if(t.startsWith("이름을")){alert("먼저 이름을 입력해 주세요.");return;}
+  try{
+    await navigator.clipboard.writeText(t);
+    $("copy").textContent="✓ 복사했습니다";
+    setTimeout(()=>$("copy").textContent="📋 복사하기",1800);
+  }catch(e){
+    const r=document.createRange();
+    r.selectNodeContents($("out"));
+    const s=getSelection(); s.removeAllRanges(); s.addRange(r);
+    $("copy").textContent="선택했습니다 — Ctrl+C 를 누르세요";
+    setTimeout(()=>$("copy").textContent="📋 복사하기",2600);
+  }
+};
+
+build();
+</script>
+</body>
+</html>

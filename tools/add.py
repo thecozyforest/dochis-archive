@@ -17,7 +17,6 @@ import argparse
 import json
 import re
 import shutil
-import subprocess
 import sys
 import unicodedata
 from datetime import date
@@ -179,10 +178,9 @@ def main() -> int:
     save(data)
     print(f"\n✓ {added}개를 items.json에 추가했습니다. (총 {len(data['items'])}개)")
 
-    subprocess.run([sys.executable, str(REPO / "tools" / "build_public.py")], check=False)
-
     print("\n" + "═" * 60)
-    print("마지막으로 인터넷에 올리려면 아래를 실행하세요.\n")
+    print("마지막으로 인터넷에 올리려면 아래를 실행하세요.")
+    print("(자료실은 이 items.json을 직접 읽으므로 따로 만들 것이 없습니다.)\n")
     print(f'  cd "{REPO}" && git add -A && git commit -m "add: {added}개 추가" && git push')
     print(f'  cd "{WAREHOUSE}" && git add -A && git commit -m "add: 자료 추가" && git push')
     return 0
